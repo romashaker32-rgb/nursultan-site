@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NURSULTAN - Игровой клиент</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Навигация - компактная как на 2-м скриншоте */
+        header {
+            background: rgba(20, 20, 20, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .flag {
+            width: 18px;
+            height: 12px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: opacity 0.3s;
+            padding: 0.3rem 0;
+        }
+
+        .nav-link:hover {
+            opacity: 0.7;
+        }
+
+        .btn-auth {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            padding: 0.45rem 1.2rem;
+            border-radius: 6px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: transform 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero секция */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 8rem 3rem 4rem;
+            position: relative;
+            background: url('img/1page.png') center right/cover no-repeat;
+            background-position: center;
+        }
+
+        /* Темный оверлей для читаемости текста */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.7) 40%, rgba(10, 10, 10, 0.3) 70%, transparent 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 550px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin-bottom: 2.5rem;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Секция преимуществ */
+        .features {
+            padding: 6rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .features-subtitle {
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2.5rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        /* Видео секция */
+        .video-section {
+            padding: 6rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .video-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-subtitle {
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Статистика */
+        .stats {
+            padding: 4rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4a90e2;
+        }
+
+        /* Тарифы */
+        .pricing {
+            padding: 6rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .pricing h2 {
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(74, 144, 226, 0.5);
+        }
+
+        .pricing-header {
+            height: 180px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .pricing-body {
+            padding: 2rem;
+        }
+
+        .pricing-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #666;
+            margin-right: 0.5rem;
+        }
+
+        .discount {
+            color: #4ade80;
+            font-size: 0.85rem;
+            border: 1px solid #4ade80;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        .btn-buy {
+            width: 100%;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            padding: 0.9rem;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Футер */
+        footer {
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 4rem 3rem 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #4a90e2;
+        }
+
+        .footer-center {
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .footer-email {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .hero {
+                background-position: center right;
+            }
+
+            .hero::before {
+                background: linear-gradient(to bottom, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.7) 60%, rgba(10, 10, 10, 0.5) 100%);
+            }
+
+            .features-grid,
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .features-grid,
+            .pricing-grid,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            header {
+                padding: 0.5rem 1rem;
+            }
+
+            .nav-right {
+                font-size: 0.7rem;
+                gap: 0.6rem;
+            }
+
+            .logo {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <header>
+        <nav>
+            <div class="nav-left">
+                <div class="logo">NURSULTAN</div>
+                <div class="language-selector">
+                    <span class="flag">🇷🇺</span>
+                    <span>Русский</span>
+                    <span style="font-size: 0.7rem;">▼</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="#support" class="nav-link">
+                    <span>👤</span> Поддержка
+                </a>
+                <a href="#video" class="nav-link">
+                    <span>📹</span> Деньги за видео
+                </a>
+                <a href="#buy" class="nav-link">
+                    <span>🛒</span> Купить
+                </a>
+                <a href="#auth" class="btn-auth">
+                    <span>🔐</span> Авторизация
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero секция -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>О нас</h1>
+            <p>Мы предоставляем вам лучший клиент для комфортной игры, который даст вам наилучшие впечатления от игры.</p>
+            <div class="hero-buttons">
+                <a href="#buy" class="btn-primary">
+                    <span>🛒</span> Купить
+                </a>
+                <a href="#more" class="btn-secondary">
+                    Подробнее →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Преимущества -->
+    <section class="features">
+        <h2>Наши преимущества</h2>
+        <p class="features-subtitle">Мы кратко изложили вам то, что вы гарантированно получите после покупки нашего клиента.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">👁️</div>
+                <h3>Красивый внешний вид</h3>
+                <p>В нашем клиенте присутствует большое количество визуальных функций, которые сделают вашу игру более красочной. А так же вы можете настроить оформление клиента под себя, сделав его по настоящему красивым.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <h3>Настраиваемость</h3>
+                <p>В нашем клиенте вы можете настроить практически любую функцию под себя, а так же использовать конфигурации других пользователей. Благодаря этому вы сможете использовать наш клиент на максимуме его возможностей.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Оптимизация</h3>
+                <p>Мы постоянно улучшаем оптимизацию нашего клиента и самой игры. Благодаря этому вы сможете запустить наш клиент даже на слабых компьютерах.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Частые обновления</h3>
+                <p>Мы регулярно обновляем функционал в нашем клиенте, добавляя новые функции, а так же совершенствуя уже существующие. Благодаря этому наш клиент имеет преимущества под все существующие сервера.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Лучшая поддержка</h3>
+                <p>У нас самая лучшая поддержка, которая разбирается в своём деле и сможет помочь вам по любому вопросу связанному с нашим клиентом.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Видео -->
+    <section class="video-section" id="video">
+        <h2>Видеообзор</h2>
+        <p class="video-subtitle">Ниже вы можете посмотреть небольшой геймплей с нашим клиентом.</p>
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <!-- Статистика -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">Пользователей</div>
+                <div class="stat-value">319 497</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">▶️</div>
+                <div class="stat-label">Запусков клиента</div>
+                <div class="stat-value">13 362 827</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-label">Обновлений вышло</div>
+                <div class="stat-value">1 225</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-label">Дней с открытия</div>
+                <div class="stat-value">1 277</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Тарифы -->
+    <section class="pricing" id="buy">
+        <h2>Наши услуги</h2>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="pricing-header">30 DAYS</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">Клиент на 30 дней</div>
+                    <div class="pricing-price">Цена: 449 ₽</div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-header">90 ДНЕЙ</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">Клиент на 90 дней</div>
+                    <div class="pricing-price">
+                        <span class="old-price">704 599 ₽</span>
+                        <span class="discount">Скидка 15%</span>
+                    </div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-header">НАВСЕГДА</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">Клиент навсегда</div>
+                    <div class="pricing-price">
+                        <span class="old-price">1 065 799 ₽</span>
+                        <span class="discount">Скидка 25%</span>
+                    </div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-header">СБРОС ПРИВЯЗКИ</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">Сброс HWID</div>
+                    <div class="pricing-price">Цена: 449 ₽</div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="pricing-header">ПРЕМИУМ ЗОД</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">Premium на 30 дней</div>
+                    <div class="pricing-price">Цена: 299 ₽</div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-header">БАЗОВЫЙ НАБОР</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">Базовый набор</div>
+                    <div class="pricing-price">Цена: 949 ₽</div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-header">ALPHA</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">ALPHA 1.16.5</div>
+                    <div class="pricing-price">Цена: 1049 ₽</div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-header">ЭЛИТНЫЙ НАБОР</div>
+                <div class="pricing-body">
+                    <div class="pricing-title">Элитный набор</div>
+                    <div class="pricing-price">Цена: 1549 ₽</div>
+                    <button class="btn-buy">🛒 Оплатить</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Навигация</h3>
+                <ul class="footer-links">
+                    <li><a href="#home">Главная</a></li>
+                    <li><a href="#buy">Купить</a></li>
+                    <li><a href="#support">Поддержка</a></li>
+                </ul>
+            </div>
+            <div class="footer-section footer-center">
+                <div class="footer-logo">NURSULTAN</div>
+                <p class="footer-email">Почта для связи: ntfhelp@mail.ru (ПН-ПТ 10:00-18:00 МСК)</p>
+            </div>
+            <div class="footer-section">
+                <h3>Навигация</h3>
+                <ul class="footer-links">
+                    <li><a href="#privacy">Обработка персональных данных</a></li>
+                    <li><a href="#terms">Пользовательское соглашение</a></li>
+                    <li><a href="#rules">Правила пользования</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            Copyright © NursultanClient 2026
+        </div>
+    </footer>
+
+    <script>
+        // Плавная прокрутка
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Анимация при скролле
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.feature-card, .pricing-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
